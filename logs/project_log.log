@@ -1,0 +1,8 @@
+2025-02-04 20:57:15.111 | INFO     | utils.utils_logger:<module>:38 - Logging to file: logs\project_log.log
+2025-02-04 20:57:15.112 | INFO     | __main__:<module>:50 - Project root: C:\Users\balla\Projects\buzzline-04-jballard
+2025-02-04 20:57:15.112 | INFO     | __main__:<module>:54 - Data folder: C:\Users\balla\Projects\buzzline-04-jballard\data
+2025-02-04 20:57:15.112 | INFO     | __main__:<module>:58 - Data file: C:\Users\balla\Projects\buzzline-04-jballard\data\buzz_live.json
+2025-02-04 20:57:15.113 | INFO     | __main__:main:125 - START producer...
+2025-02-04 20:57:15.113 | INFO     | __main__:main:126 - Hit CTRL c (or CMD c) to close.
+2025-02-04 20:57:15.142 | INFO     | __main__:get_message_interval:40 - Message interval: 3 seconds
+2025-02-04 20:57:15.142 | INFO     | __main__:main:134 - {'message': 'I just loved a story! It was exciting.', 'author': 'Alice'}
