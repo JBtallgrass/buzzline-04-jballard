@@ -296,7 +296,7 @@ GUIDES = [
 TRIP_TYPES = ["Half Day", "Full Day"]
 
 # Define the date range (Memorial Day 2024 to Labor Day 2024)
-MEMORIAL_DAY_2024 = datetime(2024, 5, 27)
+MEMORIAL_DAY_2024 = datetime(2024, 5, 24)
 LABOR_DAY_2024 = datetime(2024, 9, 2)
 DATE_RANGE = (LABOR_DAY_2024 - MEMORIAL_DAY_2024).days
 
