@@ -1,3 +1,61 @@
+## 🌊 Rafting Feedback Streaming Project
+This project is designed to **stream, process, and analyze real-time customer feedback** from rafting trips on the **French Broad River, NC** using **Apache Kafka**. It integrates customer reviews with **weather and river flow conditions**, providing valuable insights into trip experiences and environmental impacts.
+
+## 📌 Project Overview
+
+### 🎯 Goals
+- **Real-time processing** of structured (CSV) and semi-structured (JSON) data.
+- **Automated enrichment** of feedback with weather and river conditions.
+- **Performance tracking** for rafting guides based on customer reviews.
+- **Predictive insights** into trip satisfaction and environmental impact.
+
+### 🚣 Data Sources
+- **Customer Feedback**: Reviews from rafting trip participants.
+- **Weather Conditions**: Temperature, wind speed, and precipitation.
+- **River Flow Levels**: Water level, current speed, and temperature.
+
+### ⚡ Technologies Used
+- **Kafka**: Real-time message streaming and processing.
+- **Python**: Data generation, transformation, and analytics.
+- **VS Code**: Development environment.
+- **.env Configurations**: Manage environment variables.
+
+## 🛠️ Setup & Requirements
+
+To set up the project, follow the guides below:
+
+➡️ [Kafka Install Guide](Jballard_docs/kafka-install-guide.md)
+
+Additional setup instructions:
+- https://github.com/denisecase/buzzline-01-case
+- https://github.com/denisecase/buzzline-02-case
+
+### ✅ Prerequisites
+- **Python 3.11+** is required.
+- **Kafka & Zookeeper** must be installed and running.
+
+### 📥 Clone or Fork This Project
+To get started, copy this project into your GitHub account and rename it to make it your own.
+
+---
+
+## 📄 Project Documentation
+
+For a detailed overview of the project, see:
+➡️ [Project Overview](Jballard_docs/project_overview.md)
+
+### 📢 Streaming JSON Data (Rafting Feedback)
+
+**Producer:** Reads rafting feedback and streams it into Kafka.
+
+**Kafka Topic:** `rafting_feedback` _(Configurable in .env)_
+
+### 🔹 Key Consumer Insights
+✅ 🛑 Flags negative feedback with a warning emoji.
+✅ ⛅ Logs weather conditions (temperature, wind, precipitation).
+✅ 🌊 Logs river flow & water levels.
+✅ 📜 Saves negative feedback for sentiment analysis.
+
 # buzzline-04-case
 
 We can analyze and visualize different types of streaming data as the information arrives.
