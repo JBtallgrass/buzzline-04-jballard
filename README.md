@@ -17,7 +17,7 @@ Please don't hesitate to connect, collaborate, or contact me if our interests al
 
 📍 **LinkedIn**: [Jason A. Ballard](https://www.linkedin.com/in/jasonaballard)
 
-📍 ** GitHub** : [jbtallgrass](https://github.com/JBtallgrass)
+**GitHub** : [jbtallgrass](https://github.com/JBtallgrass)
 ---
 # 🌊 Rafting Feedback Streaming Project support Module 4
 
@@ -51,6 +51,13 @@ Here's an accurate and detailed `README.md` file for the **Rafting Feedback Stre
 # 🌊 Rafting Feedback Streaming Project
 
 This project is designed to **stream, process, and analyze real-time customer feedback** from rafting trips on the **French Broad River, NC**, using **Apache Kafka**. It integrates customer reviews with **weather and river flow conditions**, providing valuable insights into trip experiences and environmental impacts.
+
+Here’s how you can add the disclaimer to your `README.md`:
+
+---
+
+### ⚠️ Note: ⚠️
+The data in this project is **fictitious** with the use of  **Generative AI (GenAI)** assistants to **generate, problem-solve, and debug** the process.
 
 ---
 
@@ -150,7 +157,7 @@ This project is designed to **stream, process, and analyze real-time customer fe
 
 ## 📊 Visualizations
 
-- **Positive vs. Negative Feedback (Bar Chart)**
+- **Positive vs. Negative Feedback (Bar Chart)** 
 - **Weekly Feedback Trends (Line Chart)**
 - **Weather vs. Negative Feedback (Bar Chart)**
 - **River Flow vs. Feedback Type (Box Plot)**
@@ -170,8 +177,6 @@ This project is designed to **stream, process, and analyze real-time customer fe
 └── README.md              # Project documentation
 ```
 
----
-
 ## ⚠️ Important Notes
 
 1. Ensure Kafka and Zookeeper are running before starting producers or consumers.
@@ -183,11 +188,14 @@ This project is designed to **stream, process, and analyze real-time customer fe
 ## 📝 License
 
 This project is licensed under the **MIT License**. You are encouraged to fork, modify, and explore the code.
-[![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)  
+
+[![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/) 
+
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)  
+
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Jason%20A.%20Ballard-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/jasonaballard/)  
 
 ---
-
+_Project completed Februray 9th 2025_
 ---
 
