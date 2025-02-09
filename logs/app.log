@@ -1,0 +1,7 @@
+2025-02-09T15:57:23.184955-0600 | INFO | ✅ Connected to Kafka topic: processed_csv_feedback
+2025-02-09T15:57:41.834226-0600 | WARNING | ⛔ Consumer interrupted by user.
+2025-02-09T15:57:41.851547-0600 | INFO | ✅ Kafka consumer closed.
+2025-02-09T15:57:57.273430-0600 | INFO | ✅ Connected to Kafka topic: processed_csv_feedback
+2025-02-09T15:58:02.055954-0600 | WARNING | ⛔ Consumer interrupted by user.
+2025-02-09T15:58:02.061987-0600 | INFO | ✅ Kafka consumer closed.
+2025-02-09T16:03:35.966066-0600 | CRITICAL | ❌ Missing required environment variables: KAFKA_BROKER_ADDRESS or RAFTING_PROCESSED_TOPIC.
