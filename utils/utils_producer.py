@@ -13,6 +13,7 @@ import os
 import sys
 import socket
 import time
+from functools import wraps #used for preserving function metadata in decotators
 
 # Import external packages
 from dotenv import load_dotenv
@@ -39,7 +40,44 @@ load_dotenv()
 
 DEFAULT_ZOOKEEPER_ADDRESS = "localhost:2181"
 DEFAULT_KAFKA_BROKER_ADDRESS = "localhost:9092"
+DEFAULT_MAX_RETRIES = 3
+DEFAULT_RETRY_DELAY = 5
 
+
+#####################################
+# Retry Decorator
+#####################################
+
+def with_retries(max_retries=DEFAULT_MAX_RETRIES, delay=DEFAULT_RETRY_DELAY):
+    """
+    Decorator to implement retry logic for functions.
+    
+    Args:
+        max_retries (int): Maximum number of retry attempts
+        delay (int): Delay between retries in seconds
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            for attempt in range(max_retries + 1):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    if attempt < max_retries:
+                        logger.warning(
+                            f"Attempt {attempt + 1}/{max_retries} failed for {func.__name__}: {str(e)}. "
+                            f"Retrying in {delay} seconds..."
+                        )
+                        time.sleep(delay)
+                    else:
+                        logger.error(
+                            f"All {max_retries} retries failed for {func.__name__}: {str(last_exception)}"
+                        )
+                        raise last_exception
+        return wrapper
+    return decorator
 #####################################
 # Helper Functions
 #####################################
@@ -80,9 +118,9 @@ def check_zookeeper_service_is_ready():
             return True
     except Exception as e:
         logger.error(f"Error checking Zookeeper readiness: {e}")
-        return False
+        raise #re-raise for retry handler
 
-
+@with_retries()
 def check_kafka_service_is_ready():
     """
     Check if Kafka is ready by connecting to the broker and fetching metadata.
@@ -123,7 +161,7 @@ def verify_services():
         )
         sys.exit(2)
 
-
+@with_retries()
 def create_kafka_producer(value_serializer=None):
     """
     Create and return a Kafka producer instance.
@@ -154,7 +192,7 @@ def create_kafka_producer(value_serializer=None):
         logger.error(f"Failed to create Kafka producer: {e}")
         return None
 
-
+@with_retries()
 def create_kafka_topic(topic_name, group_id=None):
     """
     Create a fresh Kafka topic with the given name.
@@ -187,7 +225,7 @@ def create_kafka_topic(topic_name, group_id=None):
     finally:
         admin_client.close()
 
-
+@with_retries()
 def clear_kafka_topic(topic_name, group_id):
     """
     Consume and discard all messages in the Kafka topic to clear it.
@@ -246,19 +284,13 @@ def main():
     """
     Main entry point.
     """
-    if not check_zookeeper_service_is_ready():
-        logger.error(
-            "Zookeeper is not ready. Check .env file and ensure Zookeeper is running."
-        )
+    try:
+        verify_services()
+        create_kafka_topic("test_topic", "default_group")
+        logger.info("Setup completed successfully.")
+    except Exception as e:
+        logger.error(f"Setup failed: {e}")
         sys.exit(1)
-
-    if not check_kafka_service_is_ready():
-        logger.error("Kafka is not ready. Check .env file and ensure Kafka is running.")
-        sys.exit(2)
-
-    logger.info("All services are ready. Proceed with producer setup.")
-    create_kafka_topic("test_topic", "default_group")
-
 
 #####################################
 # Conditional Execution
