@@ -37,7 +37,7 @@
 
 # Verify: When active, you can usually see (.venv) in the terminal.
 
-# If using a Jupyter notebook, select the kernel associated with your project (.venv).
+# If using a Jupyter notebook, select the kernel associated with your project (.venv). 
 
 # ======================================================
 # STEP C - INSTALL PACKAGES INTO (.venv) AS NEEDED
