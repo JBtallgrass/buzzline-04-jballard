@@ -20,6 +20,14 @@ Please don't hesitate to connect, collaborate, or contact me if our interests al
 **GitHub** : [jbtallgrass](https://github.com/JBtallgrass)
 ---
 # 🌊 Rafting Feedback Streaming Project support Module 4
+---
+## 📚 Table of Contents
+- [Project Overview](#Project-Overview)
+- [Technologies Used](#Technologies-used)
+- [Setup](#setup)
+- [Project Components](#project-components)
+
+---
 
 ## 📌 Project Overview
 
@@ -90,28 +98,18 @@ The data in this project is **fictitious** with the use of  **Generative AI (Gen
 ### ✅ Prerequisites
 - **Python 3.11+**
 - **Kafka & Zookeeper** installed and running.
-- **Virtual Environment** set up for dependency management.
+    - bin/zookeeper-server-start.sh config/zookeeper.properties
+    - bin/kafka-server-start.sh config/server.properties
+  - **Virtual Environment** set up for dependency management.
 
 ### 📥 Installation and Setup
 
 1. Clone the project:
-   ```bash
-   git clone https://github.com/JBtallgrass/rafting-feedback-streaming.git
-   cd rafting-feedback-streaming
-   ```
-
+   
 2. Create and activate a virtual environment:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # For Mac/Linux
-   .venv\Scripts\activate     # For Windows
-   ```
-
+   
 3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
+  
 4. Set up Kafka and Zookeeper:
    Follow the instructions in [Kafka Install Guide](Jballard_docs/kafka-install-guide.md).
 

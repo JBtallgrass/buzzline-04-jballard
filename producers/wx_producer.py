@@ -17,7 +17,7 @@ def generate_weather_data():
         with open(DATA_FILE, "w") as f:
             json.dump(weather_data, f, indent=4)
         print(f"📤 Generated weather data: {weather_data}")
-        time.sleep(5)  # Update every 5 seconds
+        time.sleep(2)  # Update every 2 seconds
 
 if __name__ == "__main__":
     generate_weather_data()
