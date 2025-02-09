@@ -1,4 +1,5 @@
-# 🌊 Rafting Feedback Streaming Project support Module 4
+![Banner](images/banner.png)
+
 
 ## 🧑‍💼 Jason A. Ballard  
 **Instructional Systems Special | Data Scientist | Data and AI Officer | Data Literacy Advocate | Educator in Professional Military Education**
@@ -15,9 +16,10 @@ I invite you to explore my GitHub repository [jbtallgrass](https://github.com/JB
 Please don't hesitate to connect, collaborate, or contact me if our interests align. **Let's make data-driven transformation a reality together.**  
 
 📍 **LinkedIn**: [Jason A. Ballard](https://www.linkedin.com/in/jasonaballard)
-📍 ** GitHub** : [jbtallgrass](https://github.com/JBtallgrass)
 
+📍 ** GitHub** : [jbtallgrass](https://github.com/JBtallgrass)
 ---
+# 🌊 Rafting Feedback Streaming Project support Module 4
 
 ## 📌 Project Overview
 
@@ -181,11 +183,11 @@ This project is designed to **stream, process, and analyze real-time customer fe
 ## 📝 License
 
 This project is licensed under the **MIT License**. You are encouraged to fork, modify, and explore the code.
+[![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)  
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Jason%20A.%20Ballard-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/jasonaballard/)  
 
 ---
-
-Let me know if you want to customize this README further with badges, GIFs, or additional sections!
-
 
 ---
 
