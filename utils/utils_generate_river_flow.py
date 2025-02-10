@@ -9,6 +9,10 @@ from datetime import datetime, timedelta
 import random
 import json
 import pathlib
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def classify_rapid_difficulty(river_flow):
     """Classify rapid difficulty based on river flow (cfs)."""
@@ -66,11 +70,14 @@ def generate_river_flow_data(output_file="data/rafting_conditions.json"):
 
         river_data.append(river_record)
 
-    # Save to a JSON file
-    with open(data_file, "w") as file:
-        json.dump(river_data, file, indent=4)
+    # Save to a JSON file with error handling
+    try:
+        with open(data_file, "w", encoding="utf-8") as file:
+            json.dump(river_data, file, indent=4)
+        logging.info(f"River flow data saved to {data_file} with {len(river_data)} records.")
+    except Exception as e:
+        logging.error(f"Error saving file: {e}")
 
-    print(f"River flow data saved to {data_file} with {len(river_data)} records.")
     return data_file
 
 # Example usage:

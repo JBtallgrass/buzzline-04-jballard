@@ -6,9 +6,14 @@ from datetime import datetime
 from kafka import KafkaConsumer
 from dotenv import load_dotenv
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-from utils.utils_consumer import create_kafka_consumer
+try:
+    import matplotlib.pyplot as plt
+    from matplotlib.animation import FuncAnimation
+    import matplotlib
+    matplotlib.use("TkAgg")
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError("matplotlib is required for this script. Please install it by running 'pip install matplotlib'.") from e
+
 from utils.utils_logger import logger
 
 #####################################
@@ -34,25 +39,16 @@ weekly_feedback = defaultdict(lambda: {"positive": 0, "negative": 0})
 negative_feedback_log = []
 
 #####################################
-# Load Environmental Data
+# Load Environmental Data (File Option)
 #####################################
 
-WEATHER_DATA_FILE = "data/weather_conditions.json"
-RIVER_FLOW_DATA_FILE = "data/river_flow.json"
+DATA_FILE = "data/rafting_conditions.json"
 
-def load_json_data(file_path):
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return {entry["date"]: entry for entry in json.load(f)}
-    except FileNotFoundError:
-        logger.error(f"File not found: {file_path}")
-        return {}
-    except json.JSONDecodeError:
-        logger.error(f"Invalid JSON format in file: {file_path}")
-        return {}
-
-weather_lookup = load_json_data(WEATHER_DATA_FILE)
-river_lookup = load_json_data(RIVER_FLOW_DATA_FILE)
+def read_from_file(file_path):
+    """Read messages from a JSON file."""
+    with open(file_path, "r", encoding="utf-8") as file:
+        for line in file:
+            yield json.loads(line)
 
 #####################################
 # Message Processing
@@ -66,48 +62,15 @@ def process_message(message):
         trip_date = message.get("date", "unknown")
 
         week_number = datetime.strptime(trip_date, "%Y-%m-%d").isocalendar()[1]
-
-        weather = weather_lookup.get(trip_date, {
-            "weather_condition": "Data Not Available",
-            "temperature": 0,
-            "wind_speed": 0,
-            "precipitation": 0
-        })
-
-        river = river_lookup.get(trip_date, {
-            "river_flow": 0,
-            "water_level": 0,
-            "water_temperature": 0
-        })
-
-        weather_summary = (
-            f"🌤 {weather.get('weather_condition')} | "
-            f"🌡 {weather.get('temperature')}°F | "
-            f"💨 Wind {weather.get('wind_speed')} mph | "
-            f"🌧 {weather.get('precipitation')} inches rain"
-        )
-
-        river_summary = (
-            f"🌊 Flow {river.get('river_flow')} cfs | "
-            f"📏 Water Level {river.get('water_level')} ft | "
-            f"🌡 Water Temp {river.get('water_temperature')}°F"
-        )
-
         feedback_type = "negative" if is_negative else "positive"
+
         guide_feedback[guide][feedback_type] += 1
         weekly_feedback[(guide, week_number)][feedback_type] += 1
 
         if is_negative:
-            comment = f"🛑 {comment}"
-            message["weather_summary"] = weather_summary
-            message["river_summary"] = river_summary
             negative_feedback_log.append(message)
 
         logger.info(f"📝 Feedback ({trip_date}) | Guide: {guide} | Comment: {comment}")
-        logger.info(f"⛅ {weather_summary}")
-        logger.info(f"🌊 {river_summary}")
-        logger.info(f"📊 Updated feedback counts: {dict(guide_feedback)}")
-
     except Exception as e:
         logger.error(f"❌ Error processing message: {e}")
 
@@ -134,7 +97,7 @@ def update_chart(frame):
     plot_guide_performance(df)
     
     plt.subplot(2, 2, 4)
-    plot_weather_influence(df)
+    plot_negative_feedback_trend(df)
     
     plt.tight_layout()
 
@@ -159,37 +122,19 @@ def plot_guide_performance(df):
     plt.ylabel("Feedback Count")
     plt.xticks(rotation=45)
 
-def plot_weather_influence(df):
+def plot_negative_feedback_trend(df):
     negative_feedback = df[df['is_negative'] == True]
-    plt.scatter(negative_feedback['temperature'], negative_feedback['wind_speed'], color='red', label='Negative Feedback')
-    plt.title("Weather Influence on Feedback")
-    plt.xlabel("Temperature (°F)")
-    plt.ylabel("Wind Speed (mph)")
-    plt.legend()
+    negative_feedback.groupby('date').size().plot(kind='line', ax=plt.gca())
+    plt.title("Daily Negative Feedback Trend")
+    plt.xlabel("Date")
+    plt.ylabel("Count of Negative Feedback")
 
 def plot_sentiment_distribution(df):
     feedback_counts = df['is_negative'].value_counts()
-    if len(feedback_counts) == 2:
-        feedback_counts.index = ['Positive', 'Negative']
-    elif len(feedback_counts) == 1:
-        feedback_counts.index = ['Positive'] if feedback_counts.index[0] == 0 else ['Negative']
-    else:
-        feedback_counts = pd.Series([0, 0], index=['Positive', 'Negative'])
-    
+    feedback_counts.index = ['Positive', 'Negative'] if len(feedback_counts) == 2 else ['Positive']
     feedback_counts.plot(kind='pie', autopct='%1.1f%%', ax=plt.gca())
     plt.title("Sentiment Distribution")
     plt.ylabel("")
-
-#####################################
-# Save Negative Feedback Log
-#####################################
-   
-def log_negative_feedback():
-    if negative_feedback_log:
-        log_file = "negative_feedback.json"
-        with open(log_file, "w", encoding="utf-8") as f:
-            json.dump(negative_feedback_log, f, indent=4)
-        logger.info(f"📂 Negative feedback log saved to {log_file}")
 
 #####################################
 # Main Kafka Consumer Loop
@@ -197,38 +142,50 @@ def log_negative_feedback():
 
 def main():
     logger.info("🚀 Starting jb_rafting_consumer.")
-    consumer = KafkaConsumer(
-        KAFKA_TOPIC,
-        bootstrap_servers=KAFKA_BROKER,
-        auto_offset_reset="earliest",
-        group_id="jb_rafting_group",
-        value_deserializer=lambda x: json.loads(x.decode("utf-8"))
-    )
+    use_kafka = True  # Set to False to read from file
 
-    fig = plt.figure(figsize=(12, 10))
-    ani = FuncAnimation(fig, update_chart, interval=2000)
+    if use_kafka:
+        consumer = KafkaConsumer(
+            KAFKA_TOPIC,
+            bootstrap_servers=KAFKA_BROKER,
+            auto_offset_reset="earliest",
+            group_id="jb_rafting_group",
+            value_deserializer=lambda x: json.loads(x.decode("utf-8"))
+        )
 
-    try:
-        for message in consumer:
-            message_dict = message.value
-            process_message(message_dict)
-            data_buffer.append(message_dict)
+        fig = plt.figure(figsize=(12, 10))
+        ani = FuncAnimation(fig, update_chart, interval=2000)
+
+        try:
+            for message in consumer:
+                message_dict = message.value
+                process_message(message_dict)
+                data_buffer.append(message_dict)
+
+                if len(data_buffer) > 1000:
+                    data_buffer.pop(0)
+
+                time.sleep(0.5)
+        except KeyboardInterrupt:
+            logger.warning("⚠️ Consumer interrupted by user.")
+        except Exception as e:
+            logger.error(f"❌ Error in Kafka consumer: {e}")
+        finally:
+            plt.show()
+            consumer.close()
+    else:
+        fig = plt.figure(figsize=(12, 10))
+        ani = FuncAnimation(fig, update_chart, interval=2000)
+
+        for message in read_from_file(DATA_FILE):
+            process_message(message)
+            data_buffer.append(message)
 
             if len(data_buffer) > 1000:
                 data_buffer.pop(0)
 
             time.sleep(0.5)
-            log_negative_feedback()
-
-    except KeyboardInterrupt:
-        logger.warning("⚠️ Consumer interrupted by user.")
-    except Exception as e:
-        logger.error(f"❌ Error in Kafka consumer: {e}")
-    finally:
-        consumer.close()
-        logger.info("✅ Kafka consumer closed.")
-
-    plt.show()
+        plt.show()
 
 #####################################
 # Conditional Execution
