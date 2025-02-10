@@ -6,13 +6,11 @@ from datetime import datetime
 from kafka import KafkaConsumer
 from dotenv import load_dotenv
 import pandas as pd
-try:
-    import matplotlib.pyplot as plt
-    from matplotlib.animation import FuncAnimation
-    import matplotlib
-    matplotlib.use("TkAgg")
-except ModuleNotFoundError as e:
-    raise ModuleNotFoundError("matplotlib is required for this script. Please install it by running 'pip install matplotlib'.") from e
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+import matplotlib
+matplotlib.use("TkAgg")
+
 
 from utils.utils_logger import logger
 
@@ -37,18 +35,6 @@ data_buffer = []
 guide_feedback = defaultdict(lambda: {"positive": 0, "negative": 0})
 weekly_feedback = defaultdict(lambda: {"positive": 0, "negative": 0})
 negative_feedback_log = []
-
-#####################################
-# Load Environmental Data (File Option)
-#####################################
-
-DATA_FILE = "data/rafting_conditions.json"
-
-def read_from_file(file_path):
-    """Read messages from a JSON file."""
-    with open(file_path, "r", encoding="utf-8") as file:
-        for line in file:
-            yield json.loads(line)
 
 #####################################
 # Message Processing
@@ -142,50 +128,34 @@ def plot_sentiment_distribution(df):
 
 def main():
     logger.info("🚀 Starting jb_rafting_consumer.")
-    use_kafka = True  # Set to False to read from file
+    consumer = KafkaConsumer(
+        KAFKA_TOPIC,
+        bootstrap_servers=KAFKA_BROKER,
+        auto_offset_reset="earliest",
+        group_id="jb_rafting_group",
+        value_deserializer=lambda x: json.loads(x.decode("utf-8"))
+    )
 
-    if use_kafka:
-        consumer = KafkaConsumer(
-            KAFKA_TOPIC,
-            bootstrap_servers=KAFKA_BROKER,
-            auto_offset_reset="earliest",
-            group_id="jb_rafting_group",
-            value_deserializer=lambda x: json.loads(x.decode("utf-8"))
-        )
+    fig = plt.figure(figsize=(12, 10))
+    ani = FuncAnimation(fig, update_chart, interval=2000)
 
-        fig = plt.figure(figsize=(12, 10))
-        ani = FuncAnimation(fig, update_chart, interval=2000)
-
-        try:
-            for message in consumer:
-                message_dict = message.value
-                process_message(message_dict)
-                data_buffer.append(message_dict)
-
-                if len(data_buffer) > 1000:
-                    data_buffer.pop(0)
-
-                time.sleep(0.5)
-        except KeyboardInterrupt:
-            logger.warning("⚠️ Consumer interrupted by user.")
-        except Exception as e:
-            logger.error(f"❌ Error in Kafka consumer: {e}")
-        finally:
-            plt.show()
-            consumer.close()
-    else:
-        fig = plt.figure(figsize=(12, 10))
-        ani = FuncAnimation(fig, update_chart, interval=2000)
-
-        for message in read_from_file(DATA_FILE):
-            process_message(message)
-            data_buffer.append(message)
+    try:
+        for message in consumer:
+            message_dict = message.value
+            process_message(message_dict)
+            data_buffer.append(message_dict)
 
             if len(data_buffer) > 1000:
                 data_buffer.pop(0)
 
             time.sleep(0.5)
+    except KeyboardInterrupt:
+        logger.warning("⚠️ Consumer interrupted by user.")
+    except Exception as e:
+        logger.error(f"❌ Error in Kafka consumer: {e}")
+    finally:
         plt.show()
+        consumer.close()
 
 #####################################
 # Conditional Execution
