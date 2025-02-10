@@ -80,6 +80,19 @@ def process_message(message):
             "water_temperature": 0
         })
 
+        weather_summary = (
+            f"🌤 {weather.get('weather_condition')} | "
+            f"🌡 {weather.get('temperature')}°F | "
+            f"💨 Wind {weather.get('wind_speed')} mph | "
+            f"🌧 {weather.get('precipitation')} inches rain"
+        )
+
+        river_summary = (
+            f"🌊 Flow {river.get('river_flow')} cfs | "
+            f"📏 Water Level {river.get('water_level')} ft | "
+            f"🌡 Water Temp {river.get('water_temperature')}°F"
+        )
+
         feedback_type = "negative" if is_negative else "positive"
         guide_feedback[guide][feedback_type] += 1
         weekly_feedback[(guide, week_number)][feedback_type] += 1
@@ -156,7 +169,13 @@ def plot_weather_influence(df):
 
 def plot_sentiment_distribution(df):
     feedback_counts = df['is_negative'].value_counts()
-    feedback_counts.index = ['Positive', 'Negative']
+    if len(feedback_counts) == 2:
+        feedback_counts.index = ['Positive', 'Negative']
+    elif len(feedback_counts) == 1:
+        feedback_counts.index = ['Positive'] if feedback_counts.index[0] == 0 else ['Negative']
+    else:
+        feedback_counts = pd.Series([0, 0], index=['Positive', 'Negative'])
+    
     feedback_counts.plot(kind='pie', autopct='%1.1f%%', ax=plt.gca())
     plt.title("Sentiment Distribution")
     plt.ylabel("")
